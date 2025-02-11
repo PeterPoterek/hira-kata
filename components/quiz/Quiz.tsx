@@ -18,10 +18,17 @@ const Quiz = () => {
         return  hiragana[Math.floor(Math.random() * hiragana.length)]
     }
 
-    const romajiToHiragana = (event: React.MouseEvent<HTMLButtonElement>) => {
-      const romajiChar=  event.currentTarget.textContent
 
-        alert(romajiChar)
+    const checkAnwser=(char: string) =>{
+        if(!char) return false;
+
+        // alert(`${char} ${randomChar?.kana}`)
+        if(char === randomChar?.kana){
+            alert(`True ✔ ${char}:${randomChar?.kana}`);
+        }
+        else {
+            alert(`False ❌ ${char}:${randomChar?.kana}`)
+        }
     }
 
 
@@ -38,7 +45,8 @@ const Quiz = () => {
 
                 <div>
                     {hiragana.map((char: hiraganaChar, index: number) => {
-                        return <button onClick={romajiToHiragana} className={"w-[100px] h-[100px] text-4xl"} key={index}>{`${char.kana}`}</button>
+                        return <button onClick={(e: React.MouseEvent<HTMLButtonElement>) => checkAnwser((e.currentTarget.textContent ?? ""))} className={"w-[100px]" +
+                            " h-[100px] text-4xl"} key={index}>{`${char.kana}`}</button>
                     })}
                 </div>
 
