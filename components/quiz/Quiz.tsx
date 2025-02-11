@@ -18,9 +18,15 @@ const Quiz = () => {
         return  hiragana[Math.floor(Math.random() * hiragana.length)]
     }
 
+    const romajiToHiragana = (event: React.MouseEvent<HTMLButtonElement>) => {
+      const romajiChar=  event.currentTarget.textContent
+
+        alert(romajiChar)
+    }
+
+
     useEffect(() => {
         setRandomChar(getRandomHiraganaChar())
-        
     }, []);
     return (
         <div className={"flex items-center justify-center h-full "}>
@@ -32,7 +38,7 @@ const Quiz = () => {
 
                 <div>
                     {hiragana.map((char: hiraganaChar, index: number) => {
-                        return <button onClick={()=> alert("hi")} className={"w-[100px] h-[100px] text-4xl"} key={index}>{`${char.kana}`}</button>
+                        return <button onClick={romajiToHiragana} className={"w-[100px] h-[100px] text-4xl"} key={index}>{`${char.kana}`}</button>
                     })}
                 </div>
 
