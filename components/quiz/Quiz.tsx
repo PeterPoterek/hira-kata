@@ -21,31 +21,42 @@ const Quiz = () => {
     const getRandomHiraganaChar = () => {
       let newChar;
 
-      do{
+      do {
           newChar = hiragana[Math.floor(Math.random() * hiragana.length)];
       }
 
+      //To make sure its different every time
       while(newChar.romaji === prevChar?.romaji);
       return newChar;
 
     }
 
-    const getRandomChoices = (correctChar: HiraganaChar ) => {
+    const getRandomChoices = (correctChar: HiraganaChar) => {
         const incorrectAnswers = hiragana
             .filter((item) => item.kana !== correctChar.kana)
-            .sort(() => Math.random() - 0.5)
             .slice(0, 4)
             .map((item) => item.kana);
 
         const allChoices = [correctChar.kana, ...incorrectAnswers];
-        setChoices(allChoices.sort(() => Math.random() - 0.5));
-    }
+
+        // Fisher-Yates Shuffle
+        for (let i = allChoices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [allChoices[i], allChoices[j]] = [allChoices[j], allChoices[i]];
+        }
+
+        setChoices(allChoices);
+    };
 
     const generateQuestion = () =>{
         const newRandomChar = getRandomHiraganaChar();
-        setRandomChar(newRandomChar);
-        setPrevChar(newRandomChar);
 
+        // Update only if it is different
+        if(newRandomChar.kana !== prevChar?.kana){
+            setRandomChar(newRandomChar);
+        }
+
+        setPrevChar(newRandomChar);
         getRandomChoices(newRandomChar);
     }
 
