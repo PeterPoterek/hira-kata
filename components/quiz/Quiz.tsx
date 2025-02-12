@@ -4,7 +4,7 @@ import hiragana from "@/data/hiragana.json"
 import { useState, useEffect } from "react";
 
 
-interface hiraganaChar {
+interface HiraganaChar  {
     kana: string;
     romaji: string;
 }
@@ -12,14 +12,27 @@ interface hiraganaChar {
 
 
 const Quiz = () => {
-    const [randomChar, setRandomChar] = useState<hiraganaChar | null>(null)
+    const [randomChar, setRandomChar] = useState<HiraganaChar   | null>(null)
+    const [choices, setChoices] = useState<string[]>([]);
 
     const getRandomHiraganaChar = () => {
         return  hiragana[Math.floor(Math.random() * hiragana.length)]
     }
 
+    const getRandomChoices = (correctChar: HiraganaChar ) => {
 
-    const checkAnwser=(char: string) =>{
+        const incorrectAnswers = hiragana
+            .filter((item) => item.kana !== correctChar.kana)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 4)
+            .map((item) => item.kana);
+
+        const allChoices = [correctChar.kana, ...incorrectAnswers];
+        setChoices(allChoices.sort(() => Math.random() - 0.5));
+    }
+
+
+    const checkAnswer=(char: string) =>{
         if(!char) return false;
 
         // alert(`${char} ${randomChar?.kana}`)
@@ -33,7 +46,10 @@ const Quiz = () => {
 
 
     useEffect(() => {
-        setRandomChar(getRandomHiraganaChar())
+        const newRandomChar = getRandomHiraganaChar();
+        setRandomChar(newRandomChar);
+        getRandomChoices(newRandomChar);
+
     }, []);
     return (
         <div className={"flex items-center justify-center h-full "}>
@@ -44,10 +60,17 @@ const Quiz = () => {
                 </div>
 
                 <div>
-                    {hiragana.map((char: hiraganaChar, index: number) => {
-                        return <button onClick={(e: React.MouseEvent<HTMLButtonElement>) => checkAnwser((e.currentTarget.textContent ?? ""))} className={"w-[100px]" +
-                            " h-[100px] text-4xl"} key={index}>{`${char.kana}`}</button>
-                    })}
+                    {choices.map((char, index) => (
+                        <button
+                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                                checkAnswer(e.currentTarget.textContent ?? "")
+                            }
+                            className={"w-[100px] h-[100px] text-4xl"}
+                            key={index}
+                        >
+                            {char}
+                        </button>
+                    ))}
                 </div>
 
             </div>
