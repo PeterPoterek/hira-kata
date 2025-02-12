@@ -12,15 +12,25 @@ interface HiraganaChar  {
 
 
 const Quiz = () => {
-    const [randomChar, setRandomChar] = useState<HiraganaChar   | null>(null)
+    const [randomChar, setRandomChar] = useState<HiraganaChar | null>(null)
     const [choices, setChoices] = useState<string[]>([]);
+    const [prevChar, setPrevChar] = useState<HiraganaChar | null>(null);
+
+
 
     const getRandomHiraganaChar = () => {
-        return  hiragana[Math.floor(Math.random() * hiragana.length)]
+      let newChar;
+
+      do{
+          newChar = hiragana[Math.floor(Math.random() * hiragana.length)];
+      }
+
+      while(newChar.romaji === prevChar?.romaji);
+      return newChar;
+
     }
 
     const getRandomChoices = (correctChar: HiraganaChar ) => {
-
         const incorrectAnswers = hiragana
             .filter((item) => item.kana !== correctChar.kana)
             .sort(() => Math.random() - 0.5)
@@ -31,13 +41,21 @@ const Quiz = () => {
         setChoices(allChoices.sort(() => Math.random() - 0.5));
     }
 
+    const generateQuestion = () =>{
+        const newRandomChar = getRandomHiraganaChar();
+        setRandomChar(newRandomChar);
+        setPrevChar(newRandomChar);
+
+        getRandomChoices(newRandomChar);
+    }
+
 
     const checkAnswer=(char: string) =>{
         if(!char) return false;
 
-        // alert(`${char} ${randomChar?.kana}`)
         if(char === randomChar?.kana){
             alert(`True ✔ ${char}:${randomChar?.kana}`);
+            generateQuestion();
         }
         else {
             alert(`False ❌ ${char}:${randomChar?.kana}`)
@@ -46,11 +64,10 @@ const Quiz = () => {
 
 
     useEffect(() => {
-        const newRandomChar = getRandomHiraganaChar();
-        setRandomChar(newRandomChar);
-        getRandomChoices(newRandomChar);
+        generateQuestion();
 
     }, []);
+
     return (
         <div className={"flex items-center justify-center h-full "}>
             <div className={"flex flex-col"}>
