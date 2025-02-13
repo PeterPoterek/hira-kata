@@ -65,7 +65,7 @@ const Quiz = () => {
         if(!char) return false;
 
         if(char === randomChar?.kana){
-            alert(`True ✔ ${char}:${randomChar?.kana}`);
+            // alert(`True ✔ ${char}:${randomChar?.kana}`);
             generateQuestion();
         }
         else {
@@ -75,34 +75,42 @@ const Quiz = () => {
 
 
     useEffect(() => {
-        generateQuestion();
+        const handleKeyDown = (event: KeyboardEvent) => {
+            const keyIndex = parseInt(event.key, 10) - 1;
+            if (keyIndex >= 0 && keyIndex < choices.length) {
+                checkAnswer(choices[keyIndex]);
+            }
+        };
 
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [choices, randomChar]);
+
+    useEffect(() => {
+        generateQuestion();
     }, []);
 
     return (
-        <div className={"flex items-center justify-center h-full "}>
-            <div className={"flex flex-col"}>
-
-                <div className={"flex flex-col items-center justify-center"}>
-                    <p className={"text-4xl"}>{`${randomChar?.romaji}`}</p>
-                </div>
-
-                <div>
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="flex flex-col items-center gap-4">
+                <p className="text-7xl">{randomChar?.romaji}</p>
+                <div className="grid grid-cols-5 gap-2">
                     {choices.map((char, index) => (
                         <button
-                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                checkAnswer(e.currentTarget.textContent ?? "")
-                            }
-                            className={"w-[100px] h-[100px] text-4xl"}
+                            onClick={() => checkAnswer(char)}
+                            className="w-[100px] h-[100px] text-4xl flex items-center justify-center border border-gray-500 rounded relative"
                             key={index}
                         >
                             {char}
+                            <span className="absolute top-1 left-1 text-sm text-gray-500">{index + 1}</span>
                         </button>
                     ))}
                 </div>
-
             </div>
         </div>
+
     );
 };
 
