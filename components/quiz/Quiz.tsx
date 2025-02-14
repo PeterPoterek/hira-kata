@@ -66,6 +66,7 @@ const Quiz = () => {
 
     const checkAnswer= (char: string) =>{
         if(!char) return false;
+        if(progress >= maxProgress) return false;
 
         if(char === randomChar?.kana){
             if(progress + 1 === maxProgress){
