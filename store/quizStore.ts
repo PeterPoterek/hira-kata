@@ -3,12 +3,16 @@ import { create } from 'zustand'
 
 interface QuizState {
     progress: number
-    increase: (by: number) => void
+    maxProgress: number
+    incrementProgress: (amount: number) => void
+    decrementProgress: (amount : number) => void
 }
 
 const useQuizStore = create<QuizState>()((set) => ({
     progress: 0,
-    increase: (by) => set((state) => ({ progress: state.progress + by })),
+    maxProgress: 5,
+    incrementProgress: (amount ) => set((state) => ({ progress: state.progress + amount  })),
+    decrementProgress: (amount ) => set((state) => ({ progress: state.progress - amount  })),
 }))
 
 export default useQuizStore;

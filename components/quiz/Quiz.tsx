@@ -2,6 +2,7 @@
 
 import hiragana from "@/data/hiragana.json"
 import { useState, useEffect } from "react";
+import useQuizStore from "@/store/quizStore";
 
 
 interface HiraganaChar  {
@@ -15,6 +16,8 @@ const Quiz = () => {
     const [randomChar, setRandomChar] = useState<HiraganaChar | null>(null)
     const [choices, setChoices] = useState<string[]>([]);
     const [prevChar, setPrevChar] = useState<HiraganaChar | null>(null);
+
+    const {progress, maxProgress, incrementProgress, decrementProgress } = useQuizStore()
 
 
 
@@ -61,15 +64,23 @@ const Quiz = () => {
     }
 
 
-    const checkAnswer=(char: string) =>{
+    const checkAnswer= (char: string) =>{
         if(!char) return false;
 
         if(char === randomChar?.kana){
             // alert(`True ✔ ${char}:${randomChar?.kana}`);
-            generateQuestion();
+            if(progress + 1 === maxProgress){
+                alert("hi")
+                incrementProgress(1);
+            }
+            else{
+                incrementProgress(1);
+                generateQuestion();
+            }
         }
         else {
-            alert(`False ❌ ${char}:${randomChar?.kana}`)
+            if(progress === 0) return;
+            decrementProgress(1);
         }
     }
 

@@ -3,11 +3,11 @@
 import useQuizStore from "@/store/quizStore";
 
 const QuizProgress = () => {
-    const { progress, increase } = useQuizStore()
+    const { progress } = useQuizStore()
 
     return (
-        <div>
-            {progress}
+        <div className={"flex items-center justify-center"}>
+            <span className={"text-6xl"}>{progress}</span>
         </div>
     );
 };
