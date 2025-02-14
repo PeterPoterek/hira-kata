@@ -68,9 +68,8 @@ const Quiz = () => {
         if(!char) return false;
 
         if(char === randomChar?.kana){
-            // alert(`True ✔ ${char}:${randomChar?.kana}`);
             if(progress + 1 === maxProgress){
-                alert("hi")
+            alert(`Done ✔`);
                 incrementProgress(1);
             }
             else{
