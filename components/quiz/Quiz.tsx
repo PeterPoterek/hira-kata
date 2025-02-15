@@ -17,7 +17,7 @@ const Quiz = () => {
     const [choices, setChoices] = useState<string[]>([]);
     const [prevChar, setPrevChar] = useState<HiraganaChar | null>(null);
 
-    const {progress, maxProgress, incrementProgress, decrementProgress } = useQuizStore()
+    const {progress, maxProgress,mode, incrementProgress, decrementProgress} = useQuizStore()
 
 
 
@@ -65,28 +65,34 @@ const Quiz = () => {
 
 
     const checkAnswer= (char: string) =>{
-        if(!char) return false;
-        if(progress >= maxProgress) return false;
+        if(!char) return;
+        if(progress >= maxProgress) return;
 
-        if(char === randomChar?.kana){
-            if(progress + 1 === maxProgress){
-            alert(`Done ✔`);
-                incrementProgress(1);
+        if (mode === "romaji-to-hiragana") {
+            if(char === randomChar?.kana){
+                if(progress + 1 === maxProgress){
+                    alert(`Done ✔`);
+                    incrementProgress(1);
+                    //switch mode
+                    }
+                else{
+                    incrementProgress(1);
+                    generateQuestion();
+                }
             }
-            else{
-                incrementProgress(1);
-                generateQuestion();
+            else {
+                if(progress > 0) {
+                    decrementProgress(1);
+                }
             }
-        }
-        else {
-            if(progress === 0) return;
-            decrementProgress(1);
         }
     }
 
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            if (progress >= maxProgress) return;
+
             const keyIndex = parseInt(event.key, 10) - 1;
             if (keyIndex >= 0 && keyIndex < choices.length) {
                 checkAnswer(choices[keyIndex]);
