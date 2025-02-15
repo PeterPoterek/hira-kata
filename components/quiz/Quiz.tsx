@@ -17,7 +17,7 @@ const Quiz = () => {
     const [choices, setChoices] = useState<string[]>([]);
     const [prevChar, setPrevChar] = useState<HiraganaChar | null>(null);
 
-    const {progress, maxProgress,mode, incrementProgress, decrementProgress} = useQuizStore()
+    const {progress, maxProgress, mode, incrementProgress, decrementProgress, switchMode} = useQuizStore()
 
 
 
@@ -36,11 +36,13 @@ const Quiz = () => {
 
     const getRandomChoices = (correctChar: HiraganaChar) => {
         const incorrectAnswers = hiragana
-            .filter((item) => item.kana !== correctChar.kana)
+            .filter((item) => item !== correctChar)
             .slice(0, 4)
-            .map((item) => item.kana);
+            .map((item) => mode === "romaji-to-hiragana" ? item.kana : item.romaji);
 
-        const allChoices = [correctChar.kana, ...incorrectAnswers];
+        const allChoices = mode === "romaji-to-hiragana"
+            ? [correctChar.kana, ...incorrectAnswers]
+            : [correctChar.romaji, ...incorrectAnswers];
 
         // Fisher-Yates Shuffle
         for (let i = allChoices.length - 1; i > 0; i--) {
@@ -51,40 +53,34 @@ const Quiz = () => {
         setChoices(allChoices);
     };
 
-    const generateQuestion = () =>{
+    const generateQuestion = () => {
         const newRandomChar = getRandomHiraganaChar();
-
-        // Update only if it is different
-        if(newRandomChar.kana !== prevChar?.kana){
+        if (newRandomChar.kana !== prevChar?.kana) {
             setRandomChar(newRandomChar);
         }
-
         setPrevChar(newRandomChar);
         getRandomChoices(newRandomChar);
     }
 
+    const checkAnswer = (char: string) => {
+        if (!char || !randomChar || progress >= maxProgress) return;
 
-    const checkAnswer= (char: string) =>{
-        if(!char) return;
-        if(progress >= maxProgress) return;
+        const isCorrect = mode === "romaji-to-hiragana"
+            ? char === randomChar.kana
+            : char === randomChar.romaji;
 
-        if (mode === "romaji-to-hiragana") {
-            if(char === randomChar?.kana){
-                if(progress + 1 === maxProgress){
-                    alert(`Done ✔`);
-                    incrementProgress(1);
-                    //switch mode
-                    }
-                else{
-                    incrementProgress(1);
-                    generateQuestion();
-                }
+        if (isCorrect) {
+            if (progress + 1 === maxProgress) {
+                alert(`Next stage ✔`);
+                incrementProgress(1);
+                switchMode();
+                generateQuestion();
+            } else {
+                incrementProgress(1);
+                generateQuestion();
             }
-            else {
-                if(progress > 0) {
-                    decrementProgress(1);
-                }
-            }
+        } else if (progress > 0) {
+            decrementProgress(1);
         }
     }
 
@@ -103,16 +99,17 @@ const Quiz = () => {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [choices, randomChar]);
+    }, [choices, randomChar, progress, maxProgress]);
 
     useEffect(() => {
         generateQuestion();
-    }, []);
+    }, [mode]);
 
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="flex flex-col items-center gap-4">
-                <p className="text-7xl">{randomChar?.romaji}</p>
+                <p className="text-7xl">
+                    {mode === "romaji-to-hiragana" ? randomChar?.romaji: randomChar?.kana}</p>
                 <div className="grid grid-cols-5 gap-2">
                     {choices.map((char, index) => (
                         <button
