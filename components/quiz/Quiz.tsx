@@ -17,7 +17,7 @@ const Quiz = () => {
     const [choices, setChoices] = useState<string[]>([]);
     const [prevChar, setPrevChar] = useState<HiraganaChar | null>(null);
 
-    const {progress, maxProgress, mode, incrementProgress, decrementProgress, switchMode} = useQuizStore()
+    const {progress, maxProgress,  mode, incrementProgress, decrementProgress, switchMode, wrongGuesses, incrementWrongGuesses} = useQuizStore()
 
 
 
@@ -81,6 +81,7 @@ const Quiz = () => {
             }
         } else if (progress > 0) {
             decrementProgress(1);
+            incrementWrongGuesses(1)
         }
     }
 
