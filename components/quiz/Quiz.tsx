@@ -137,47 +137,51 @@ const Quiz = () => {
   }
 
   return (
-    <AnimatePresence mode="wait">
-      {transitioning ? (
-        <motion.div
-          key="transition"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-4xl font-bold text-center"
-        >
-          Next Stage ✔
-        </motion.div>
-      ) : (
-        <motion.div
-          key="quiz"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <p className="text-7xl">
-            {mode === "romaji-to-kata" ? randomChar?.romaji : randomChar?.kana}
-          </p>
-          <div className="grid grid-cols-5 gap-2">
-            {choices.map((char, index) => (
-              <button
-                onClick={() => checkAnswer(char)}
-                className="w-[100px] h-[100px] text-4xl flex items-center justify-center border border-gray-500 rounded relative"
-                key={index}
-              >
-                {char}
-                <span className="absolute top-1 left-1 text-sm text-gray-500">
-                  {index + 1}
-                </span>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="flex items-center justify-center min-h-screen">
+      <AnimatePresence mode="wait">
+        {transitioning ? (
+          <motion.div
+            key="transition"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl font-bold text-center"
+          >
+            Next Stage ✔
+          </motion.div>
+        ) : (
+          <motion.div
+            key="quiz"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <p className="text-7xl mb-4">
+              {mode === "romaji-to-kata"
+                ? randomChar?.romaji
+                : randomChar?.kana}
+            </p>
+            <div className="grid grid-cols-5 gap-2">
+              {choices.map((char, index) => (
+                <button
+                  onClick={() => checkAnswer(char)}
+                  className="w-[100px] h-[100px] text-4xl flex items-center justify-center border border-gray-500 rounded relative"
+                  key={index}
+                >
+                  {char}
+                  <span className="absolute top-1 left-1 text-sm text-gray-500">
+                    {index + 1}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
