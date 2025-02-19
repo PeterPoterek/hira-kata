@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 interface QuizState {
-    mode: "hiragana-to-romaji" | "romaji-to-hiragana"
+    mode: "kata-to-romaji" | "romaji-to-kata"
     progress: number
     maxProgress: number
     incrementProgress: (amount: number) => void
@@ -13,7 +13,7 @@ interface QuizState {
 }
 
 const useQuizStore = create<QuizState>()((set) => ({
-    mode: "romaji-to-hiragana",
+    mode: "romaji-to-kata",
     progress: 0,
     maxProgress: 5,
     wrongGuesses: 0,
@@ -24,12 +24,12 @@ const useQuizStore = create<QuizState>()((set) => ({
         progress: Math.max(state.progress - amount, 0)
     })),
     resetProgress: () => set(() => ({
-        mode: "romaji-to-hiragana",
+        mode: "romaji-to-kata",
         progress: 0,
         wrongGuesses: 0
     })),
     switchMode: () => set((state) => ({
-        mode: state.mode === "hiragana-to-romaji" ? "romaji-to-hiragana" : "hiragana-to-romaji",
+        mode: state.mode === "kata-to-romaji" ? "romaji-to-kata" : "kata-to-romaji",
         progress: 0,
     })),
     incrementWrongGuesses: (amount) => set((state) => ({

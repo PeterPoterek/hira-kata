@@ -38,9 +38,9 @@ const Quiz = () => {
         const incorrectAnswers = hiragana
             .filter((item) => item !== correctChar)
             .slice(0, 4)
-            .map((item) => mode === "romaji-to-hiragana" ? item.kana : item.romaji);
+            .map((item) => mode === "romaji-to-kata" ? item.kana : item.romaji);
 
-        const allChoices = mode === "romaji-to-hiragana"
+        const allChoices = mode === "romaji-to-kata"
             ? [correctChar.kana, ...incorrectAnswers]
             : [correctChar.romaji, ...incorrectAnswers];
 
@@ -65,7 +65,7 @@ const Quiz = () => {
     const checkAnswer = (char: string) => {
         if (!char || !randomChar || progress >= maxProgress) return;
 
-        const isCorrect = mode === "romaji-to-hiragana"
+        const isCorrect = mode === "romaji-to-kata"
             ? char === randomChar.kana
             : char === randomChar.romaji;
 
@@ -110,7 +110,7 @@ const Quiz = () => {
         <div className="flex items-center justify-center min-h-screen">
             <div className="flex flex-col items-center gap-4">
                 <p className="text-7xl">
-                    {mode === "romaji-to-hiragana" ? randomChar?.romaji: randomChar?.kana}</p>
+                    {mode === "romaji-to-kata" ? randomChar?.romaji: randomChar?.kana}</p>
                 <div className="grid grid-cols-5 gap-2">
                     {choices.map((char, index) => (
                         <button
