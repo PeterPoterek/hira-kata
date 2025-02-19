@@ -23,17 +23,14 @@ const Quiz = () => {
     switchMode,
     wrongGuesses,
     incrementWrongGuesses,
+    resetProgress,
   } = useQuizStore();
 
   const getRandomHiraganaChar = () => {
     let newChar;
-
     do {
       newChar = hiragana[Math.floor(Math.random() * hiragana.length)];
-    } while (
-      //To make sure its different every time
-      newChar.romaji === prevChar?.romaji
-    );
+    } while (newChar.romaji === prevChar?.romaji);
     return newChar;
   };
 
@@ -53,21 +50,19 @@ const Quiz = () => {
       const j = Math.floor(Math.random() * (i + 1));
       [allChoices[i], allChoices[j]] = [allChoices[j], allChoices[i]];
     }
-
     setChoices(allChoices);
   };
 
   const generateQuestion = () => {
+    if (mode === "completed") return;
     const newRandomChar = getRandomHiraganaChar();
-    if (newRandomChar.kana !== prevChar?.kana) {
-      setRandomChar(newRandomChar);
-    }
+    setRandomChar(newRandomChar);
     setPrevChar(newRandomChar);
     getRandomChoices(newRandomChar);
   };
 
   const checkAnswer = (char: string) => {
-    if (!char || !randomChar || progress >= maxProgress) return;
+    if (!char || !randomChar) return;
 
     const isCorrect =
       mode === "romaji-to-kata"
@@ -76,23 +71,31 @@ const Quiz = () => {
 
     if (isCorrect) {
       if (progress + 1 === maxProgress) {
-        alert(`Next stage ✔`);
         incrementProgress(1);
-        switchMode();
-        generateQuestion();
+        if (mode === "romaji-to-kata") {
+          alert("Next stage ✔");
+          resetProgress();
+          switchMode("kata-to-romaji");
+          generateQuestion();
+        } else if (mode === "kata-to-romaji") {
+          switchMode("completed");
+        }
       } else {
         incrementProgress(1);
         generateQuestion();
       }
-    } else if (progress > 0) {
-      decrementProgress(1);
+    } else {
+      if (progress > 0) {
+        decrementProgress(1);
+      }
       incrementWrongGuesses(1);
     }
   };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (progress >= maxProgress) return;
+      const currentProgress = useQuizStore.getState().progress;
+      if (currentProgress >= maxProgress) return;
 
       const keyIndex = parseInt(event.key, 10) - 1;
       if (keyIndex >= 0 && keyIndex < choices.length) {
@@ -104,11 +107,26 @@ const Quiz = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [choices, randomChar, progress, maxProgress]);
+  }, [choices, randomChar, maxProgress, mode]);
 
   useEffect(() => {
     generateQuestion();
   }, [mode]);
+
+  if (mode === "completed") {
+    const totalQuestions = maxProgress * 2; //2x so both modes
+    const totalCorrect = totalQuestions - wrongGuesses;
+    const accuracy = Math.round((totalCorrect / totalQuestions) * 100);
+
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Quiz Completed!</h1>
+          <p className="text-xl">Accuracy: {accuracy}%</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
