@@ -15,6 +15,7 @@ const Quiz = () => {
   const [choices, setChoices] = useState<string[]>([]);
   const [prevChar, setPrevChar] = useState<KanaChar | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [answeredWrong, setAnsweredWrong] = useState(false);
 
   const {
     progress,
@@ -80,8 +81,9 @@ const Quiz = () => {
         : char === randomChar.romaji;
 
     if (isCorrect) {
+      incrementProgress(1);
+      setAnsweredWrong(false);
       if (progress + 1 === maxProgress) {
-        incrementProgress(1);
         setTimeout(() => {
           if (mode === "romaji-to-kata") {
             setTransitioning(true);
@@ -96,14 +98,14 @@ const Quiz = () => {
           }
         }, 100);
       } else {
-        incrementProgress(1);
         generateQuestion();
       }
     } else {
-      if (progress > 0) {
-        decrementProgress(1);
+      if (!answeredWrong) {
+        incrementWrongGuesses(1);
+        setAnsweredWrong(true);
       }
-      incrementWrongGuesses(1);
+      if (progress > 0) decrementProgress(1);
     }
   };
 
