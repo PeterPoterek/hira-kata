@@ -1,19 +1,19 @@
 "use client";
 
-import hiragana from "@/data/hiragana.json";
+import kanaData from "@/data/kana.json";
 import { useState, useEffect } from "react";
 import useQuizStore from "@/store/quizStore";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface HiraganaChar {
+interface KanaChar {
   kana: string;
   romaji: string;
 }
 
 const Quiz = () => {
-  const [randomChar, setRandomChar] = useState<HiraganaChar | null>(null);
+  const [randomChar, setRandomChar] = useState<KanaChar | null>(null);
   const [choices, setChoices] = useState<string[]>([]);
-  const [prevChar, setPrevChar] = useState<HiraganaChar | null>(null);
+  const [prevChar, setPrevChar] = useState<KanaChar | null>(null);
   const [transitioning, setTransitioning] = useState(false);
 
   const {
@@ -28,17 +28,25 @@ const Quiz = () => {
     resetProgress,
   } = useQuizStore();
 
-  const getRandomHiraganaChar = () => {
+  const getKanaList = () => {
+    const scriptType = mode === "romaji-to-kata" ? "hiragana" : "katakana";
+    return Object.values(kanaData[0][scriptType]).flat();
+  };
+
+  const getRandomKanaChar = () => {
+    const kanaList = getKanaList();
     let newChar;
     do {
-      newChar = hiragana[Math.floor(Math.random() * hiragana.length)];
+      newChar = kanaList[Math.floor(Math.random() * kanaList.length)];
     } while (newChar.romaji === prevChar?.romaji);
     return newChar;
   };
 
-  const getRandomChoices = (correctChar: HiraganaChar) => {
-    const incorrectAnswers = hiragana
-      .filter(item => item !== correctChar)
+  const getRandomChoices = (correctChar: KanaChar) => {
+    const kanaList = getKanaList();
+    const incorrectAnswers = kanaList
+      .filter(item => item.romaji !== correctChar.romaji)
+      .sort(() => Math.random() - 0.5)
       .slice(0, 4)
       .map(item => (mode === "romaji-to-kata" ? item.kana : item.romaji));
 
@@ -57,7 +65,7 @@ const Quiz = () => {
 
   const generateQuestion = () => {
     if (mode === "completed") return;
-    const newRandomChar = getRandomHiraganaChar();
+    const newRandomChar = getRandomKanaChar();
     setRandomChar(newRandomChar);
     setPrevChar(newRandomChar);
     getRandomChoices(newRandomChar);
@@ -74,7 +82,6 @@ const Quiz = () => {
     if (isCorrect) {
       if (progress + 1 === maxProgress) {
         incrementProgress(1);
-
         setTimeout(() => {
           if (mode === "romaji-to-kata") {
             setTransitioning(true);
@@ -87,7 +94,7 @@ const Quiz = () => {
           } else if (mode === "kata-to-romaji") {
             switchMode("completed");
           }
-        }, 100); // delay to sure progress updates
+        }, 100);
       } else {
         incrementProgress(1);
         generateQuestion();
@@ -102,9 +109,7 @@ const Quiz = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const currentProgress = useQuizStore.getState().progress;
-      if (currentProgress >= maxProgress) return;
-
+      if (useQuizStore.getState().progress >= maxProgress) return;
       const keyIndex = parseInt(event.key, 10) - 1;
       if (keyIndex >= 0 && keyIndex < choices.length) {
         checkAnswer(choices[keyIndex]);
@@ -122,7 +127,7 @@ const Quiz = () => {
   }, [mode]);
 
   if (mode === "completed") {
-    const totalQuestions = maxProgress * 2; //2x so both modes
+    const totalQuestions = maxProgress * 2;
     const totalCorrect = totalQuestions - wrongGuesses;
     const accuracy = Math.round((totalCorrect / totalQuestions) * 100);
 
