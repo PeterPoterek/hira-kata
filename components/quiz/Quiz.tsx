@@ -18,8 +18,8 @@ type ScriptType = "hiragana" | "katakana";
 
 const Quiz = () => {
   const [randomChar, setRandomChar] = useState<KanaChar | null>(null);
-  const [currentGroup, setCurrentGroup] = useState<string>("");
-  const [currentScript, setCurrentScript] = useState<ScriptType>("hiragana");
+  const [, setCurrentGroup] = useState<string>("");
+  const [, setCurrentScript] = useState<ScriptType>("hiragana");
   const [choices, setChoices] = useState<string[]>([]);
   const [prevChar, setPrevChar] = useState<KanaChar | null>(null);
   const [transitioning, setTransitioning] = useState(false);
