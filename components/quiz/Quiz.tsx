@@ -10,9 +10,16 @@ interface KanaChar {
   romaji: string;
 }
 
+interface KanaGroups {
+  [groupName: string]: KanaChar[];
+}
+
+type ScriptType = "hiragana" | "katakana";
+
 const Quiz = () => {
   const [randomChar, setRandomChar] = useState<KanaChar | null>(null);
   const [currentGroup, setCurrentGroup] = useState<string>("");
+  const [currentScript, setCurrentScript] = useState<ScriptType>("hiragana");
   const [choices, setChoices] = useState<string[]>([]);
   const [prevChar, setPrevChar] = useState<KanaChar | null>(null);
   const [transitioning, setTransitioning] = useState(false);
@@ -30,13 +37,18 @@ const Quiz = () => {
     resetProgress,
   } = useQuizStore();
 
-  const getGroups = (): { [key: string]: KanaChar[] } => {
-    const scriptType = mode === "romaji-to-kata" ? "hiragana" : "katakana";
+  const getGroups = (scriptType: ScriptType): KanaGroups => {
     return kanaData[0][scriptType];
   };
 
-  const getRandomKanaChar = (): { char: KanaChar; groupKey: string } => {
-    const groups = getGroups();
+  const getRandomKanaChar = (): {
+    char: KanaChar;
+    groupKey: string;
+    scriptType: ScriptType;
+  } => {
+    const scriptType: ScriptType =
+      Math.random() < 0.5 ? "hiragana" : "katakana";
+    const groups = getGroups(scriptType);
     const groupKeys = Object.keys(groups);
     const randomGroupKey =
       groupKeys[Math.floor(Math.random() * groupKeys.length)];
@@ -45,11 +57,15 @@ const Quiz = () => {
     do {
       newChar = groupArr[Math.floor(Math.random() * groupArr.length)];
     } while (newChar.romaji === prevChar?.romaji);
-    return { char: newChar, groupKey: randomGroupKey };
+    return { char: newChar, groupKey: randomGroupKey, scriptType };
   };
 
-  const getRandomChoices = (correctChar: KanaChar, groupName: string) => {
-    const groups = getGroups();
+  const getRandomChoices = (
+    correctChar: KanaChar,
+    groupName: string,
+    scriptType: ScriptType,
+  ) => {
+    const groups = getGroups(scriptType);
     const groupArr: KanaChar[] = groups[groupName];
     const incorrectAnswers = groupArr
       .filter(item => item.romaji !== correctChar.romaji)
@@ -71,11 +87,12 @@ const Quiz = () => {
 
   const generateQuestion = () => {
     if (mode === "completed") return;
-    const { char: newRandomChar, groupKey } = getRandomKanaChar();
+    const { char: newRandomChar, groupKey, scriptType } = getRandomKanaChar();
     setRandomChar(newRandomChar);
     setPrevChar(newRandomChar);
     setCurrentGroup(groupKey);
-    getRandomChoices(newRandomChar, groupKey);
+    setCurrentScript(scriptType);
+    getRandomChoices(newRandomChar, groupKey, scriptType);
   };
 
   const checkAnswer = (char: string) => {
@@ -125,9 +142,7 @@ const Quiz = () => {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [choices, randomChar, maxProgress, mode]);
 
   useEffect(() => {
