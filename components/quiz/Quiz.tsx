@@ -12,6 +12,7 @@ interface KanaChar {
 
 const Quiz = () => {
   const [randomChar, setRandomChar] = useState<KanaChar | null>(null);
+  const [currentGroup, setCurrentGroup] = useState<string>("");
   const [choices, setChoices] = useState<string[]>([]);
   const [prevChar, setPrevChar] = useState<KanaChar | null>(null);
   const [transitioning, setTransitioning] = useState(false);
@@ -29,32 +30,36 @@ const Quiz = () => {
     resetProgress,
   } = useQuizStore();
 
-  const getKanaList = () => {
+  const getGroups = (): { [key: string]: KanaChar[] } => {
     const scriptType = mode === "romaji-to-kata" ? "hiragana" : "katakana";
-    return Object.values(kanaData[0][scriptType]).flat();
+    return kanaData[0][scriptType];
   };
 
-  const getRandomKanaChar = () => {
-    const kanaList = getKanaList();
-    let newChar;
+  const getRandomKanaChar = (): { char: KanaChar; groupKey: string } => {
+    const groups = getGroups();
+    const groupKeys = Object.keys(groups);
+    const randomGroupKey =
+      groupKeys[Math.floor(Math.random() * groupKeys.length)];
+    const groupArr: KanaChar[] = groups[randomGroupKey];
+    let newChar: KanaChar;
     do {
-      newChar = kanaList[Math.floor(Math.random() * kanaList.length)];
+      newChar = groupArr[Math.floor(Math.random() * groupArr.length)];
     } while (newChar.romaji === prevChar?.romaji);
-    return newChar;
+    return { char: newChar, groupKey: randomGroupKey };
   };
 
-  const getRandomChoices = (correctChar: KanaChar) => {
-    const kanaList = getKanaList();
-    const incorrectAnswers = kanaList
+  const getRandomChoices = (correctChar: KanaChar, groupName: string) => {
+    const groups = getGroups();
+    const groupArr: KanaChar[] = groups[groupName];
+    const incorrectAnswers = groupArr
       .filter(item => item.romaji !== correctChar.romaji)
       .sort(() => Math.random() - 0.5)
       .slice(0, 2)
       .map(item => (mode === "romaji-to-kata" ? item.kana : item.romaji));
 
-    const allChoices =
-      mode === "romaji-to-kata"
-        ? [correctChar.kana, ...incorrectAnswers]
-        : [correctChar.romaji, ...incorrectAnswers];
+    const correctAnswer =
+      mode === "romaji-to-kata" ? correctChar.kana : correctChar.romaji;
+    const allChoices = [correctAnswer, ...incorrectAnswers];
 
     // Fisher-Yates Shuffle
     for (let i = allChoices.length - 1; i > 0; i--) {
@@ -66,10 +71,11 @@ const Quiz = () => {
 
   const generateQuestion = () => {
     if (mode === "completed") return;
-    const newRandomChar = getRandomKanaChar();
+    const { char: newRandomChar, groupKey } = getRandomKanaChar();
     setRandomChar(newRandomChar);
     setPrevChar(newRandomChar);
-    getRandomChoices(newRandomChar);
+    setCurrentGroup(groupKey);
+    getRandomChoices(newRandomChar, groupKey);
   };
 
   const checkAnswer = (char: string) => {
