@@ -48,7 +48,7 @@ const Quiz = () => {
     const incorrectAnswers = kanaList
       .filter(item => item.romaji !== correctChar.romaji)
       .sort(() => Math.random() - 0.5)
-      .slice(0, 4)
+      .slice(0, 2)
       .map(item => (mode === "romaji-to-kata" ? item.kana : item.romaji));
 
     const allChoices =
@@ -171,7 +171,7 @@ const Quiz = () => {
                 ? randomChar?.romaji
                 : randomChar?.kana}
             </p>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {choices.map((char, index) => (
                 <button
                   onClick={() => checkAnswer(char)}
