@@ -66,6 +66,55 @@ const Quiz = () => {
     scriptType: ScriptType,
   ) => {
     const groups = getGroups(scriptType);
+
+    if (scriptType === "hiragana") {
+      // hiragana edge cases
+      if (correctChar.romaji === "wa") {
+        const options = ["わ", "ね", "を"];
+        setChoices(
+          mode === "romaji-to-kata"
+            ? shuffleArray(options)
+            : shuffleArray(["wa", "ne", "wo"]),
+        );
+        return;
+      } else if (correctChar.romaji === "wo") {
+        const options = ["を", "と", "わ"];
+        setChoices(
+          mode === "romaji-to-kata"
+            ? shuffleArray(options)
+            : shuffleArray(["wo", "to", "wa"]),
+        );
+        return;
+      } else if (correctChar.romaji === "n") {
+        const options = ["ん", "の", "へ"];
+        setChoices(
+          mode === "romaji-to-kata"
+            ? shuffleArray(options)
+            : shuffleArray(["n", "no", "he"]),
+        );
+        return;
+      }
+    } else if (scriptType === "katakana") {
+      // katakana edge cases
+      if (correctChar.romaji === "wa" || correctChar.romaji === "wo") {
+        const options = ["ワ", "ヲ", "フ"];
+        setChoices(
+          mode === "romaji-to-kata"
+            ? shuffleArray(options)
+            : shuffleArray(["wa", "wo", "fu"]),
+        );
+        return;
+      } else if (correctChar.romaji === "n") {
+        const options = ["ン", "ソ", "ノ"];
+        setChoices(
+          mode === "romaji-to-kata"
+            ? shuffleArray(options)
+            : shuffleArray(["n", "so", "no"]),
+        );
+        return;
+      }
+    }
+
     const groupArr: KanaChar[] = groups[groupName];
     const incorrectAnswers = groupArr
       .filter(item => item.romaji !== correctChar.romaji)
@@ -78,11 +127,16 @@ const Quiz = () => {
     const allChoices = [correctAnswer, ...incorrectAnswers];
 
     // Fisher-Yates Shuffle
-    for (let i = allChoices.length - 1; i > 0; i--) {
+    setChoices(shuffleArray(allChoices));
+  };
+
+  const shuffleArray = (array: string[]) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [allChoices[i], allChoices[j]] = [allChoices[j], allChoices[i]];
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
-    setChoices(allChoices);
+    return newArray;
   };
 
   const generateQuestion = () => {
@@ -135,7 +189,7 @@ const Quiz = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (useQuizStore.getState().progress >= maxProgress) return;
-      const keyIndex = parseInt(event.key, 10) - 1;
+      const keyIndex = Number.parseInt(event.key, 10) - 1;
       if (keyIndex >= 0 && keyIndex < choices.length) {
         checkAnswer(choices[keyIndex]);
       }
