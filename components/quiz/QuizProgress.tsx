@@ -32,20 +32,19 @@ const QuizProgress = () => {
 
       <div className="relative">
         <Slider value={[progress]} max={maxProgress} step={1} />
-
-        <motion.div
-          className="absolute bottom-0 left-0 h-1 bg-primary rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${progressPercentage}%` }}
-          transition={{ duration: 0.3 }}
-        />
       </div>
 
       <div className="flex justify-between mt-2">
         <span className="text-sm text-muted-foreground">0</span>
-        <span className={`text-sm font-medium ${getProgressColor()}`}>
+        <motion.span
+          className={`text-sm font-medium ${getProgressColor()}`}
+          key={progress}
+          initial={{ scale: 1 }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 0.3 }}
+        >
           {progress} / {maxProgress}
-        </span>
+        </motion.span>
         <span className="text-sm text-muted-foreground">{maxProgress}</span>
       </div>
     </div>
