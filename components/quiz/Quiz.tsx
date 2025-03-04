@@ -4,6 +4,7 @@ import kanaData from "@/data/kana.json";
 import { useState, useEffect } from "react";
 import useQuizStore from "@/store/quizStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { QuizButton } from "@/components/quiz/QuizButton";
 
 interface KanaChar {
   kana: string;
@@ -246,18 +247,15 @@ const Quiz = () => {
                 ? randomChar?.romaji
                 : randomChar?.kana}
             </p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-4">
               {choices.map((char, index) => (
-                <button
+                <QuizButton
+                  key={char + index}
+                  char={char}
+                  index={index}
                   onClick={() => checkAnswer(char)}
-                  className="w-[100px] h-[100px] text-4xl flex items-center justify-center border border-gray-500 rounded relative"
-                  key={index}
-                >
-                  {char}
-                  <span className="absolute top-1 left-1 text-sm text-gray-500">
-                    {index + 1}
-                  </span>
-                </button>
+                  isWrongState={answeredWrong}
+                />
               ))}
             </div>
           </motion.div>
