@@ -198,12 +198,11 @@ const Quiz = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [choices, randomChar, maxProgress, mode]);
+  }, [choices, maxProgress]);
 
   useEffect(() => {
     generateQuestion();
   }, [mode]);
-
   if (mode === "completed") {
     const totalQuestions = maxProgress * 2;
     const totalCorrect = totalQuestions - wrongGuesses;
@@ -253,7 +252,7 @@ const Quiz = () => {
                   key={char + index}
                   char={char}
                   index={index}
-                  onClick={() => checkAnswer(char)}
+                  onSelectAction={() => checkAnswer(char)}
                   isWrongState={answeredWrong}
                 />
               ))}

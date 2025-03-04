@@ -5,19 +5,19 @@ import { motion } from "framer-motion";
 interface QuizButtonProps {
   char: string;
   index: number;
-  onClick: () => void;
+  onSelectAction: () => void;
   isWrongState: boolean;
 }
 
 export const QuizButton = ({
   char,
   index,
-  onClick,
+  onSelectAction,
   isWrongState,
 }: QuizButtonProps) => {
   return (
     <motion.button
-      onClick={onClick}
+      onClick={onSelectAction}
       key={char + index}
       className={`w-[100px] h-[100px] text-4xl flex items-center justify-center rounded-xl relative overflow-hidden
         ${isWrongState ? "hover:bg-red-100 dark:hover:bg-red-950/30" : "hover:bg-primary/10"} 
