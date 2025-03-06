@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import QuizProgress from "@/components/quiz/QuizProgress";
 
 interface QuizButtonProps {
   char: string;
