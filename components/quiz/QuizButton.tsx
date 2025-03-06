@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import QuizProgress from "@/components/quiz/QuizProgress";
 
 interface QuizButtonProps {
   char: string;
@@ -9,7 +10,7 @@ interface QuizButtonProps {
   isWrongState: boolean;
 }
 
-export const QuizButton = ({
+const QuizButton = ({
   char,
   index,
   onSelectAction,
@@ -58,3 +59,5 @@ export const QuizButton = ({
     </motion.button>
   );
 };
+
+export default QuizButton;

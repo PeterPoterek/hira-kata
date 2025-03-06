@@ -4,7 +4,7 @@ import kanaData from "@/data/kana.json";
 import { useState, useEffect } from "react";
 import useQuizStore from "@/store/quizStore";
 import { motion, AnimatePresence } from "framer-motion";
-import { QuizButton } from "@/components/quiz/QuizButton";
+import QuizButton from "@/components/quiz/QuizButton";
 
 interface KanaChar {
   kana: string;
