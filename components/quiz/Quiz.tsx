@@ -51,13 +51,62 @@ const Quiz = () => {
       Math.random() < 0.5 ? "hiragana" : "katakana";
     const groups = getGroups(scriptType);
     const groupKeys = Object.keys(groups);
+
+    if (groupKeys.length === 0) {
+      console.error("No group keys found for script type:", scriptType);
+      return {
+        char: { kana: "あ", romaji: "a" },
+        groupKey: "vowels",
+        scriptType: "hiragana",
+      };
+    }
+
     const randomGroupKey =
       groupKeys[Math.floor(Math.random() * groupKeys.length)];
+
+    if (
+      !groups[randomGroupKey] ||
+      !Array.isArray(groups[randomGroupKey]) ||
+      groups[randomGroupKey].length === 0
+    ) {
+      console.error(
+        `Invalid group or empty array for key: ${randomGroupKey} in script: ${scriptType}`,
+      );
+      // fallback
+      return {
+        char: { kana: "あ", romaji: "a" },
+        groupKey: "vowels",
+        scriptType: "hiragana",
+      };
+    }
+
     const groupArr: KanaChar[] = groups[randomGroupKey];
     let newChar: KanaChar;
-    do {
-      newChar = groupArr[Math.floor(Math.random() * groupArr.length)];
-    } while (newChar.romaji === prevChar?.romaji);
+
+    if (randomGroupKey === "n" && groupArr.length === 1) {
+      newChar = groupArr[0];
+      if (
+        prevChar?.romaji === newChar.romaji &&
+        prevChar?.kana === newChar.kana
+      ) {
+        const otherKeys = groupKeys.filter(key => key !== "n");
+        if (otherKeys.length > 0) {
+          const otherKey =
+            otherKeys[Math.floor(Math.random() * otherKeys.length)];
+          const otherGroup = groups[otherKey];
+          newChar = otherGroup[Math.floor(Math.random() * otherGroup.length)];
+          return { char: newChar, groupKey: otherKey, scriptType };
+        }
+      }
+    } else {
+      do {
+        newChar = groupArr[Math.floor(Math.random() * groupArr.length)];
+      } while (
+        newChar.romaji === prevChar?.romaji &&
+        newChar.kana === prevChar?.kana
+      );
+    }
+
     return { char: newChar, groupKey: randomGroupKey, scriptType };
   };
 
@@ -67,6 +116,25 @@ const Quiz = () => {
     scriptType: ScriptType,
   ) => {
     const groups = getGroups(scriptType);
+
+    if (correctChar.romaji === "n") {
+      if (scriptType === "hiragana") {
+        const options = ["ん", "の", "へ"];
+        setChoices(
+          mode === "romaji-to-kata"
+            ? shuffleArray(options)
+            : shuffleArray(["n", "no", "he"]),
+        );
+      } else if (scriptType === "katakana") {
+        const options = ["ン", "ソ", "ノ"];
+        setChoices(
+          mode === "romaji-to-kata"
+            ? shuffleArray(options)
+            : shuffleArray(["n", "so", "no"]),
+        );
+      }
+      return;
+    }
 
     if (scriptType === "hiragana") {
       // hiragana edge cases
@@ -86,14 +154,6 @@ const Quiz = () => {
             : shuffleArray(["wo", "to", "wa"]),
         );
         return;
-      } else if (correctChar.romaji === "n") {
-        const options = ["ん", "の", "へ"];
-        setChoices(
-          mode === "romaji-to-kata"
-            ? shuffleArray(options)
-            : shuffleArray(["n", "no", "he"]),
-        );
-        return;
       }
     } else if (scriptType === "katakana") {
       // katakana edge cases
@@ -105,18 +165,48 @@ const Quiz = () => {
             : shuffleArray(["wa", "wo", "fu"]),
         );
         return;
-      } else if (correctChar.romaji === "n") {
-        const options = ["ン", "ソ", "ノ"];
-        setChoices(
-          mode === "romaji-to-kata"
-            ? shuffleArray(options)
-            : shuffleArray(["n", "so", "no"]),
-        );
-        return;
       }
     }
 
+    if (!groups[groupName] || !Array.isArray(groups[groupName])) {
+      console.error(`Invalid group: ${groupName} in script: ${scriptType}`);
+      // fallback
+      const fallbackChoices =
+        mode === "romaji-to-kata"
+          ? [correctChar.kana, "ア", "イ"]
+          : [correctChar.romaji, "a", "i"];
+      setChoices(shuffleArray(fallbackChoices));
+      return;
+    }
+
     const groupArr: KanaChar[] = groups[groupName];
+
+    if (groupArr.length < 3) {
+      let allChars: KanaChar[] = [];
+
+      Object.values(groups).forEach(group => {
+        if (Array.isArray(group)) {
+          allChars = [...allChars, ...group];
+        }
+      });
+
+      const otherChars = allChars.filter(
+        item =>
+          item.romaji !== correctChar.romaji && item.kana !== correctChar.kana,
+      );
+
+      const incorrectAnswers = otherChars
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2)
+        .map(item => (mode === "romaji-to-kata" ? item.kana : item.romaji));
+
+      const correctAnswer =
+        mode === "romaji-to-kata" ? correctChar.kana : correctChar.romaji;
+
+      setChoices(shuffleArray([correctAnswer, ...incorrectAnswers]));
+      return;
+    }
+
     const incorrectAnswers = groupArr
       .filter(item => item.romaji !== correctChar.romaji)
       .sort(() => Math.random() - 0.5)
@@ -125,10 +215,8 @@ const Quiz = () => {
 
     const correctAnswer =
       mode === "romaji-to-kata" ? correctChar.kana : correctChar.romaji;
-    const allChoices = [correctAnswer, ...incorrectAnswers];
 
-    // Fisher-Yates Shuffle
-    setChoices(shuffleArray(allChoices));
+    setChoices(shuffleArray([correctAnswer, ...incorrectAnswers]));
   };
 
   const shuffleArray = (array: string[]) => {
@@ -203,6 +291,7 @@ const Quiz = () => {
   useEffect(() => {
     generateQuestion();
   }, [mode]);
+
   if (mode === "completed") {
     const totalQuestions = maxProgress * 2;
     const totalCorrect = totalQuestions - wrongGuesses;
