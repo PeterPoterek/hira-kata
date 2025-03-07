@@ -40,7 +40,18 @@ const Quiz = () => {
   } = useQuizStore();
 
   const getGroups = (scriptType: ScriptType): KanaGroups => {
-    return kanaData[0][scriptType];
+    const groups = kanaData[0][scriptType];
+    return Object.fromEntries(
+      Object.entries(groups).filter(
+        ([key, value]) => key !== "combinations" || Array.isArray(value),
+      ),
+    );
+  };
+
+  const getCombinations = (
+    scriptType: ScriptType,
+  ): Record<string, KanaChar[]> => {
+    return kanaData[0][scriptType].combinations || {};
   };
 
   const getRandomKanaChar = (): {
@@ -51,6 +62,32 @@ const Quiz = () => {
     const scriptType: ScriptType =
       Math.random() < 0.5 ? "hiragana" : "katakana";
     const groups = getGroups(scriptType);
+    const combinations = getCombinations(scriptType);
+
+    const useCombinations =
+      Math.random() < 0.2 && Object.keys(combinations).length > 0;
+
+    if (useCombinations) {
+      const baseKeys = Object.keys(combinations);
+      const randomBaseKey =
+        baseKeys[Math.floor(Math.random() * baseKeys.length)];
+      const combinationArr = combinations[randomBaseKey];
+
+      if (
+        combinationArr &&
+        Array.isArray(combinationArr) &&
+        combinationArr.length > 0
+      ) {
+        const newChar =
+          combinationArr[Math.floor(Math.random() * combinationArr.length)];
+        return {
+          char: newChar,
+          groupKey: `combinations-${randomBaseKey}`,
+          scriptType,
+        };
+      }
+    }
+
     const groupKeys = Object.keys(groups);
 
     if (groupKeys.length === 0) {
@@ -117,6 +154,7 @@ const Quiz = () => {
     scriptType: ScriptType,
   ) => {
     const groups = getGroups(scriptType);
+    const combinations = getCombinations(scriptType);
 
     if (correctChar.romaji === "n") {
       if (scriptType === "hiragana") {
@@ -166,6 +204,44 @@ const Quiz = () => {
             : shuffleArray(["wa", "wo", "fu"]),
         );
         return;
+      }
+    }
+
+    if (groupName.startsWith("combinations-")) {
+      const baseKey = groupName.replace("combinations-", "");
+      const combinationChars = combinations[baseKey];
+
+      if (combinationChars && Array.isArray(combinationChars)) {
+        if (combinationChars.length >= 3) {
+          const incorrectAnswers = combinationChars
+            .filter(item => item.romaji !== correctChar.romaji)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 2)
+            .map(item => (mode === "romaji-to-kata" ? item.kana : item.romaji));
+
+          const correctAnswer =
+            mode === "romaji-to-kata" ? correctChar.kana : correctChar.romaji;
+          setChoices(shuffleArray([correctAnswer, ...incorrectAnswers]));
+          return;
+        } else {
+          let allCombinationChars: KanaChar[] = [];
+          Object.values(combinations).forEach(chars => {
+            if (Array.isArray(chars)) {
+              allCombinationChars = [...allCombinationChars, ...chars];
+            }
+          });
+
+          const incorrectAnswers = allCombinationChars
+            .filter(item => item.romaji !== correctChar.romaji)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 2)
+            .map(item => (mode === "romaji-to-kata" ? item.kana : item.romaji));
+
+          const correctAnswer =
+            mode === "romaji-to-kata" ? correctChar.kana : correctChar.romaji;
+          setChoices(shuffleArray([correctAnswer, ...incorrectAnswers]));
+          return;
+        }
       }
     }
 
