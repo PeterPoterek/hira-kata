@@ -68,6 +68,41 @@
       ],
       "n": [
         { "kana": "ん", "romaji": "n" }
+      ],
+      "ga-row": [
+        { "kana": "が", "romaji": "ga" },
+        { "kana": "ぎ", "romaji": "gi" },
+        { "kana": "ぐ", "romaji": "gu" },
+        { "kana": "げ", "romaji": "ge" },
+        { "kana": "ご", "romaji": "go" }
+      ],
+      "za-row": [
+        { "kana": "ざ", "romaji": "za" },
+        { "kana": "じ", "romaji": "ji" },
+        { "kana": "ず", "romaji": "zu" },
+        { "kana": "ぜ", "romaji": "ze" },
+        { "kana": "ぞ", "romaji": "zo" }
+      ],
+      "da-row": [
+        { "kana": "だ", "romaji": "da" },
+        { "kana": "ぢ", "romaji": "ji" },
+        { "kana": "づ", "romaji": "zu" },
+        { "kana": "で", "romaji": "de" },
+        { "kana": "ど", "romaji": "do" }
+      ],
+      "ba-row": [
+        { "kana": "ば", "romaji": "ba" },
+        { "kana": "び", "romaji": "bi" },
+        { "kana": "ぶ", "romaji": "bu" },
+        { "kana": "べ", "romaji": "be" },
+        { "kana": "ぼ", "romaji": "bo" }
+      ],
+      "pa-row": [
+        { "kana": "ぱ", "romaji": "pa" },
+        { "kana": "ぴ", "romaji": "pi" },
+        { "kana": "ぷ", "romaji": "pu" },
+        { "kana": "ぺ", "romaji": "pe" },
+        { "kana": "ぽ", "romaji": "po" }
       ]
     },
     "katakana": {
@@ -138,6 +173,41 @@
       ],
       "n": [
         { "kana": "ン", "romaji": "n" }
+      ],
+      "ga-row": [
+        { "kana": "ガ", "romaji": "ga" },
+        { "kana": "ギ", "romaji": "gi" },
+        { "kana": "グ", "romaji": "gu" },
+        { "kana": "ゲ", "romaji": "ge" },
+        { "kana": "ゴ", "romaji": "go" }
+      ],
+      "za-row": [
+        { "kana": "ザ", "romaji": "za" },
+        { "kana": "ジ", "romaji": "ji" },
+        { "kana": "ズ", "romaji": "zu" },
+        { "kana": "ゼ", "romaji": "ze" },
+        { "kana": "ゾ", "romaji": "zo" }
+      ],
+      "da-row": [
+        { "kana": "ダ", "romaji": "da" },
+        { "kana": "ヂ", "romaji": "ji" },
+        { "kana": "ヅ", "romaji": "zu" },
+        { "kana": "デ", "romaji": "de" },
+        { "kana": "ド", "romaji": "do" }
+      ],
+      "ba-row": [
+        { "kana": "バ", "romaji": "ba" },
+        { "kana": "ビ", "romaji": "bi" },
+        { "kana": "ブ", "romaji": "bu" },
+        { "kana": "ベ", "romaji": "be" },
+        { "kana": "ボ", "romaji": "bo" }
+      ],
+      "pa-row": [
+        { "kana": "パ", "romaji": "pa" },
+        { "kana": "ピ", "romaji": "pi" },
+        { "kana": "プ", "romaji": "pu" },
+        { "kana": "ペ", "romaji": "pe" },
+        { "kana": "ポ", "romaji": "po" }
       ]
     }
   }
