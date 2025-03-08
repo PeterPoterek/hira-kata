@@ -3,7 +3,7 @@ import { create } from "zustand";
 interface QuizState {
   progress: number;
   maxProgress: number;
-  mode: "romaji-to-kata" | "kata-to-romaji" | "completed";
+  mode: "selection" | "romaji-to-kata" | "kata-to-romaji" | "completed";
   wrongGuesses: number;
   incrementProgress: (by: number) => void;
   decrementProgress: (by: number) => void;

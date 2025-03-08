@@ -4,7 +4,10 @@ import kanaData from "@/data/kana.json";
 import { useState, useEffect } from "react";
 import useQuizStore from "@/store/quizStore";
 import { motion, AnimatePresence } from "framer-motion";
+
 import QuizButton from "@/components/quiz/QuizButton";
+import QuizProgress from "@/components/quiz/QuizProgress";
+
 import { Button } from "@/components/ui/button";
 
 interface KanaChar {
@@ -487,6 +490,7 @@ const Quiz = () => {
                 Try Again
               </Button>
               <Button
+                onClick={() => switchMode("selection")}
                 variant="outline"
                 className="flex items-center justify-center gap-2"
                 size="lg"
@@ -516,48 +520,52 @@ const Quiz = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <AnimatePresence mode="wait">
-        {transitioning ? (
-          <motion.div
-            key="transition"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-center"
-          >
-            Next Stage ✔
-          </motion.div>
-        ) : (
-          <motion.div
-            key="quiz"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center gap-4"
-          >
-            <p className="text-7xl mb-4">
-              {mode === "romaji-to-kata"
-                ? randomChar?.romaji
-                : randomChar?.kana}
-            </p>
-            <div className="grid grid-cols-3 gap-4">
-              {choices.map((char, index) => (
-                <QuizButton
-                  key={char + index}
-                  char={char}
-                  index={index}
-                  onSelectAction={() => checkAnswer(char)}
-                  isWrongState={answeredWrong}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    <>
+      <QuizProgress />
+
+      <div className="flex items-center justify-center min-h-screen">
+        <AnimatePresence mode="wait">
+          {transitioning ? (
+            <motion.div
+              key="transition"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl font-bold text-center"
+            >
+              Next Stage ✔
+            </motion.div>
+          ) : (
+            <motion.div
+              key="quiz"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center gap-4"
+            >
+              <p className="text-7xl mb-4">
+                {mode === "romaji-to-kata"
+                  ? randomChar?.romaji
+                  : randomChar?.kana}
+              </p>
+              <div className="grid grid-cols-3 gap-4">
+                {choices.map((char, index) => (
+                  <QuizButton
+                    key={char + index}
+                    char={char}
+                    index={index}
+                    onSelectAction={() => checkAnswer(char)}
+                    isWrongState={answeredWrong}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
   );
 };
 
