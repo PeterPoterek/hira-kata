@@ -15,7 +15,7 @@ interface QuizState {
 const useQuizStore = create<QuizState>()(set => ({
   progress: 0,
   maxProgress: 5,
-  mode: "selection",
+  mode: "romaji-to-kata",
   wrongGuesses: 0,
   incrementProgress: by => set(state => ({ progress: state.progress + by })),
   decrementProgress: by =>
