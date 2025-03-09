@@ -8,7 +8,13 @@ const page = () => {
   const { mode } = useQuizStore();
 
   if (mode === "selection") {
-    return <Selection />;
+    return (
+      <Selection
+        onComplete={selectedRows => {
+          console.log(selectedRows);
+        }}
+      />
+    );
   } else {
     return <Quiz />;
   }
